@@ -225,20 +225,42 @@ app/
 - [x] Basic Compose setup with Material 3 theme
 - [x] This README
 
-### Phase 2: Data Layer (Next)
+### Phase 2: Data Layer ✅
 
-- [ ] Define data models (Expense, RecurringExpense, Budget, Category)
-- [ ] Create Room database with entities and DAOs
-- [ ] Build repository layer
-- [ ] Unit tests for database operations
+- [x] Define data models (Expense, RecurringExpense, Budget, Category)
+- [x] Create Room database with entities and DAOs
+- [x] Build repository layer
+- [x] Unit tests for database operations
 
-### Phase 3: Core Feature - Recurring Expenses
+### Phase 3: Core Feature - Recurring Expenses (In Progress)
 
-- [ ] UI to add/edit/delete recurring expenses
-- [ ] Frequency options (weekly, bi-weekly, monthly, annually)
-- [ ] ViewModel + business logic
-- [ ] Unit tests for recurring expense logic
-- [ ] UI tests for the screen
+**Sub-phase 3A: Navigation + List Screen** ✅
+
+- [x] Custom blue/teal Material 3 theme
+- [x] Compose Navigation setup
+- [x] RecurringExpenseListScreen with card-based UI
+- [x] Empty state message
+- [x] ViewModel with mock data
+- [x] Toggle active/inactive functionality
+
+**Sub-phase 3B: Add/Edit Screen** (Next)
+
+- [ ] AddEditRecurringExpenseScreen UI
+- [ ] Form inputs (amount, category, frequency, date, description)
+- [ ] Reusable components (CategoryPicker, FrequencyPicker, etc.)
+- [ ] Navigation integration
+
+**Sub-phase 3C: Wire Up Real Data**
+
+- [ ] Connect ViewModel to repository
+- [ ] Implement all CRUD operations
+- [ ] Validation logic
+- [ ] Error handling
+
+**Sub-phase 3D: Testing**
+
+- [ ] ViewModel unit tests
+- [ ] UI tests for both screens
 
 ### Phase 4: Core Feature - One-Time Expenses
 
@@ -374,6 +396,8 @@ This is a personal project for learning and interview preparation.
 
 ---
 
-**Current Status**: Phase 1 Complete - Project structure set up and ready for development.
+**Current Status**: Phase 3A Complete - Navigation and recurring expense list screen implemented
+with custom theme and mock data.
 
-**Next Steps**: Begin Phase 2 - Build out the data layer with Room entities, DAOs, and repositories.
+**Next Steps**: Continue Phase 3B - Build the add/edit recurring expense screen with form inputs and
+validation.
