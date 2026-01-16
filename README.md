@@ -243,14 +243,14 @@ app/
 - [x] ViewModel with mock data
 - [x] Toggle active/inactive functionality
 
-**Sub-phase 3B: Add/Edit Screen** (Next)
+**Sub-phase 3B: Add/Edit Screen** ✅
 
-- [ ] AddEditRecurringExpenseScreen UI
-- [ ] Form inputs (amount, category, frequency, date, description)
-- [ ] Reusable components (CategoryPicker, FrequencyPicker, etc.)
-- [ ] Navigation integration
+- [x] AddEditRecurringExpenseScreen UI
+- [x] Form inputs (amount, category, frequency, date, description)
+- [x] Reusable components (CategoryPicker, FrequencyPicker, etc.)
+- [x] Navigation integration
 
-**Sub-phase 3C: Wire Up Real Data**
+**Sub-phase 3C: Wire Up Real Data** (Next)
 
 - [ ] Connect ViewModel to repository
 - [ ] Implement all CRUD operations
@@ -396,8 +396,8 @@ This is a personal project for learning and interview preparation.
 
 ---
 
-**Current Status**: Phase 3A Complete - Navigation and recurring expense list screen implemented
-with custom theme and mock data.
+**Current Status**: Phase 3B Complete - Full CRUD functionality for recurring expenses with
+beautiful form UI and reusable components.
 
-**Next Steps**: Continue Phase 3B - Build the add/edit recurring expense screen with form inputs and
-validation.
+**Next Steps**: Continue Phase 3C - Connect ViewModel to repository for real data persistence, or
+move to Phase 3D for comprehensive testing.

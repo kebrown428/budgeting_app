@@ -115,6 +115,95 @@ class RecurringExpenseViewModel @Inject constructor(
     }
 
     /**
+     * Get a recurring expense by ID.
+     * TODO: Wire up to repository in Sub-phase 3C
+     */
+    fun getRecurringExpenseById(id: Long): RecurringExpense? {
+        return _recurringExpenses.value.firstOrNull { it.id == id }
+    }
+
+    /**
+     * Add a new recurring expense.
+     * TODO: Wire up to repository in Sub-phase 3C
+     */
+    fun addRecurringExpense(
+        amount: Double,
+        category: ExpenseCategory,
+        frequency: RecurrenceFrequency,
+        startDate: LocalDate,
+        description: String?
+    ) {
+        val currentList = _recurringExpenses.value
+        val newId = (currentList.maxOfOrNull { it.id } ?: 0) + 1
+        val newExpense = RecurringExpense(
+            id = newId,
+            amount = amount,
+            category = category,
+            description = description,
+            frequency = frequency,
+            startDate = startDate,
+            nextDueDate = startDate, // Initially same as start date
+            isActive = true
+        )
+        _recurringExpenses.value = (currentList + newExpense).sortedWith(
+            compareBy<RecurringExpense> {
+                when (it.frequency) {
+                    RecurrenceFrequency.MONTHLY -> 0
+                    RecurrenceFrequency.WEEKLY -> 1
+                    RecurrenceFrequency.BI_WEEKLY -> 2
+                    RecurrenceFrequency.ANNUALLY -> 3
+                }
+            }.thenBy { it.nextDueDate }
+        )
+    }
+
+    /**
+     * Update an existing recurring expense.
+     * TODO: Wire up to repository in Sub-phase 3C
+     */
+    fun updateRecurringExpense(
+        id: Long,
+        amount: Double,
+        category: ExpenseCategory,
+        frequency: RecurrenceFrequency,
+        startDate: LocalDate,
+        description: String?
+    ) {
+        val currentList = _recurringExpenses.value
+        _recurringExpenses.value = currentList.map { expense ->
+            if (expense.id == id) {
+                expense.copy(
+                    amount = amount,
+                    category = category,
+                    description = description,
+                    frequency = frequency,
+                    startDate = startDate
+                )
+            } else {
+                expense
+            }
+        }.sortedWith(
+            compareBy<RecurringExpense> {
+                when (it.frequency) {
+                    RecurrenceFrequency.MONTHLY -> 0
+                    RecurrenceFrequency.WEEKLY -> 1
+                    RecurrenceFrequency.BI_WEEKLY -> 2
+                    RecurrenceFrequency.ANNUALLY -> 3
+                }
+            }.thenBy { it.nextDueDate }
+        )
+    }
+
+    /**
+     * Delete a recurring expense.
+     * TODO: Wire up to repository in Sub-phase 3C
+     */
+    fun deleteRecurringExpense(id: Long) {
+        val currentList = _recurringExpenses.value
+        _recurringExpenses.value = currentList.filter { it.id != id }
+    }
+
+    /**
      * Toggle the active state of a recurring expense.
      * TODO: Wire up to repository in Sub-phase 3C
      */
