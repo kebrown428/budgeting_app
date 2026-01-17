@@ -7,9 +7,11 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import app.cash.turbine.test
 import com.example.budgetingapp.data.local.BudgetingDatabase
 import com.example.budgetingapp.data.local.entities.ExpenseEntity
-import com.google.common.truth.Truth.assertThat
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -59,7 +61,7 @@ class ExpenseDaoTest {
         val id = expenseDao.insert(expense)
 
         // Then
-        assertThat(id).isGreaterThan(0)
+        Assert.assertTrue(id > 0)
     }
 
     @Test
@@ -76,11 +78,12 @@ class ExpenseDaoTest {
         // When & Then
         expenseDao.getExpenseById(id).test {
             val result = awaitItem()
-            assertThat(result).isNotNull()
-            assertThat(result?.id).isEqualTo(id)
-            assertThat(result?.amount).isEqualTo(50.0)
-            assertThat(result?.category).isEqualTo("GROCERY")
-            assertThat(result?.description).isEqualTo("Test expense")
+            assertTrue(result != null)
+            Assert.assertEquals(result?.id, id)
+            Assert.assertEquals(result?.amount, 50.0)
+            Assert.assertEquals(result?.category, "GROCERY")
+            Assert.assertEquals(result?.description, "Test expense")
+            cancelAndIgnoreRemainingEvents()
         }
     }
 
@@ -103,10 +106,9 @@ class ExpenseDaoTest {
         // When & Then
         expenseDao.getAllExpenses().test {
             val expenses = awaitItem()
-            assertThat(expenses).hasSize(2)
-            // Should be ordered by date DESC (newest first)
-            assertThat(expenses[0].amount).isEqualTo(75.0)
-            assertThat(expenses[1].amount).isEqualTo(50.0)
+            assertTrue(expenses.size == 2)
+            assertEquals(expenses[0].amount, 75.0)
+            assertEquals(expenses[1].amount, 50.0)
         }
     }
 
@@ -127,8 +129,10 @@ class ExpenseDaoTest {
         // Then
         expenseDao.getExpenseById(id).test {
             val result = awaitItem()
-            assertThat(result?.amount).isEqualTo(100.0)
-            assertThat(result?.category).isEqualTo("DINING")
+            assertTrue(result != null)
+            Assert.assertEquals(result?.id, id)
+            Assert.assertEquals(result?.amount, 100.0)
+            Assert.assertEquals(result?.category, "DINING")
         }
     }
 
@@ -148,7 +152,7 @@ class ExpenseDaoTest {
         // Then
         expenseDao.getExpenseById(id).test {
             val result = awaitItem()
-            assertThat(result).isNull()
+            assertTrue(result == null)
         }
     }
 
@@ -180,8 +184,9 @@ class ExpenseDaoTest {
         val endDate = now
         expenseDao.getExpensesByDateRange(startDate, endDate).test {
             val expenses = awaitItem()
-            assertThat(expenses).hasSize(2)
-            assertThat(expenses.map { it.amount }).containsExactly(75.0, 50.0)
+            assertTrue(expenses.size == 2)
+            assertEquals(expenses[0].amount, 75.0)
+            assertEquals(expenses[1].amount, 50.0)
         }
     }
 
@@ -213,7 +218,7 @@ class ExpenseDaoTest {
         val endDate = now
         expenseDao.getTotalExpensesByDateRange(startDate, endDate).test {
             val total = awaitItem()
-            assertThat(total).isEqualTo(125.0)
+            assertTrue(total == 125.0)
         }
     }
 
@@ -238,8 +243,8 @@ class ExpenseDaoTest {
         // When & Then
         expenseDao.getExpensesFromSlushFund().test {
             val expenses = awaitItem()
-            assertThat(expenses).hasSize(1)
-            assertThat(expenses[0].amount).isEqualTo(50.0)
+            assertTrue(expenses.size == 1)
+            assertEquals(expenses[0].amount, 50.0)
         }
     }
 }

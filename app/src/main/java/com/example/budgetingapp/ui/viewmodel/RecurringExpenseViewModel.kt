@@ -1,130 +1,65 @@
 package com.example.budgetingapp.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.budgetingapp.data.repository.BudgetRepository
 import com.example.budgetingapp.domain.model.ExpenseCategory
 import com.example.budgetingapp.domain.model.RecurrenceFrequency
 import com.example.budgetingapp.domain.model.RecurringExpense
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
 
 /**
  * ViewModel for managing recurring expenses.
  *
- * For Sub-phase 3A, this uses mock data to demonstrate the UI.
- * In Sub-phase 3C, we'll connect this to the real repository.
+ * Connected to the BudgetRepository for real data persistence.
+ * All data flows reactively from the Room database.
  */
 @HiltViewModel
 class RecurringExpenseViewModel @Inject constructor(
-    // TODO: Inject BudgetRepository in Sub-phase 3C
+    private val budgetRepository: BudgetRepository
 ) : ViewModel() {
 
-    // Mock data for Sub-phase 3A
-    private val _recurringExpenses = MutableStateFlow(getMockData())
-    val recurringExpenses: StateFlow<List<RecurringExpense>> = _recurringExpenses.asStateFlow()
-
     /**
-     * Generate mock data for testing the UI.
-     * Data is sorted by frequency: Monthly, Weekly, Bi-weekly, Annually
+     * Flow of all recurring expenses from the database.
+     * Automatically sorted by frequency and next due date.
      */
-    private fun getMockData(): List<RecurringExpense> {
-        return listOf(
-            RecurringExpense(
-                id = 1,
-                amount = 800.0,
-                category = ExpenseCategory.RENT,
-                description = "Apartment rent",
-                frequency = RecurrenceFrequency.MONTHLY,
-                startDate = LocalDate.of(2024, 1, 1),
-                nextDueDate = LocalDate.of(2024, 2, 1),
-                isActive = true
-            ),
-            RecurringExpense(
-                id = 2,
-                amount = 15.99,
-                category = ExpenseCategory.SUBSCRIPTION,
-                description = "Netflix",
-                frequency = RecurrenceFrequency.MONTHLY,
-                startDate = LocalDate.of(2024, 1, 15),
-                nextDueDate = LocalDate.of(2024, 2, 15),
-                isActive = true
-            ),
-            RecurringExpense(
-                id = 3,
-                amount = 50.0,
-                category = ExpenseCategory.SUBSCRIPTION,
-                description = "Phone bill",
-                frequency = RecurrenceFrequency.MONTHLY,
-                startDate = LocalDate.of(2024, 1, 5),
-                nextDueDate = LocalDate.of(2024, 2, 5),
-                isActive = true
-            ),
-            RecurringExpense(
-                id = 4,
-                amount = 75.0,
-                category = ExpenseCategory.GROCERY,
-                description = "Weekly groceries",
-                frequency = RecurrenceFrequency.WEEKLY,
-                startDate = LocalDate.of(2024, 1, 8),
-                nextDueDate = LocalDate.of(2024, 1, 29),
-                isActive = true
-            ),
-            RecurringExpense(
-                id = 5,
-                amount = 120.0,
-                category = ExpenseCategory.NECESSITY,
-                description = "Gym membership",
-                frequency = RecurrenceFrequency.BI_WEEKLY,
-                startDate = LocalDate.of(2024, 1, 1),
-                nextDueDate = LocalDate.of(2024, 1, 29),
-                isActive = true
-            ),
-            RecurringExpense(
-                id = 6,
-                amount = 600.0,
-                category = ExpenseCategory.NECESSITY,
-                description = "Car insurance",
-                frequency = RecurrenceFrequency.ANNUALLY,
-                startDate = LocalDate.of(2023, 6, 1),
-                nextDueDate = LocalDate.of(2024, 6, 1),
-                isActive = true
-            ),
-            RecurringExpense(
-                id = 7,
-                amount = 9.99,
-                category = ExpenseCategory.SUBSCRIPTION,
-                description = "Spotify (paused)",
-                frequency = RecurrenceFrequency.MONTHLY,
-                startDate = LocalDate.of(2024, 1, 1),
-                nextDueDate = LocalDate.of(2024, 2, 1),
-                isActive = false // Example of an inactive recurring expense
+    val recurringExpenses: StateFlow<List<RecurringExpense>> = budgetRepository
+        .getAllRecurringExpenses()
+        .map { expenses ->
+            // Sort by frequency first, then by next due date
+            expenses.sortedWith(
+                compareBy<RecurringExpense> {
+                    when (it.frequency) {
+                        RecurrenceFrequency.MONTHLY -> 0
+                        RecurrenceFrequency.WEEKLY -> 1
+                        RecurrenceFrequency.BI_WEEKLY -> 2
+                        RecurrenceFrequency.ANNUALLY -> 3
+                    }
+                }.thenBy { it.nextDueDate }
             )
-        ).sortedWith(
-            compareBy<RecurringExpense> {
-                when (it.frequency) {
-                    RecurrenceFrequency.MONTHLY -> 0
-                    RecurrenceFrequency.WEEKLY -> 1
-                    RecurrenceFrequency.BI_WEEKLY -> 2
-                    RecurrenceFrequency.ANNUALLY -> 3
-                }
-            }.thenBy { it.nextDueDate }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
         )
-    }
 
     /**
      * Get a recurring expense by ID.
-     * TODO: Wire up to repository in Sub-phase 3C
+     * Returns null if not found.
      */
     fun getRecurringExpenseById(id: Long): RecurringExpense? {
-        return _recurringExpenses.value.firstOrNull { it.id == id }
+        // Get from current state - the Flow is already keeping it updated
+        return recurringExpenses.value.firstOrNull { it.id == id }
     }
 
     /**
-     * Add a new recurring expense.
-     * TODO: Wire up to repository in Sub-phase 3C
+     * Add a new recurring expense to the database.
+     * Runs in a coroutine on the IO dispatcher.
      */
     fun addRecurringExpense(
         amount: Double,
@@ -133,33 +68,23 @@ class RecurringExpenseViewModel @Inject constructor(
         startDate: LocalDate,
         description: String?
     ) {
-        val currentList = _recurringExpenses.value
-        val newId = (currentList.maxOfOrNull { it.id } ?: 0) + 1
-        val newExpense = RecurringExpense(
-            id = newId,
-            amount = amount,
-            category = category,
-            description = description,
-            frequency = frequency,
-            startDate = startDate,
-            nextDueDate = startDate, // Initially same as start date
-            isActive = true
-        )
-        _recurringExpenses.value = (currentList + newExpense).sortedWith(
-            compareBy<RecurringExpense> {
-                when (it.frequency) {
-                    RecurrenceFrequency.MONTHLY -> 0
-                    RecurrenceFrequency.WEEKLY -> 1
-                    RecurrenceFrequency.BI_WEEKLY -> 2
-                    RecurrenceFrequency.ANNUALLY -> 3
-                }
-            }.thenBy { it.nextDueDate }
-        )
+        viewModelScope.launch {
+            val newExpense = RecurringExpense(
+                id = 0, // Room will auto-generate
+                amount = amount,
+                category = category,
+                description = description,
+                frequency = frequency,
+                startDate = startDate,
+                nextDueDate = startDate, // Initially same as start date
+                isActive = true
+            )
+            budgetRepository.insertRecurringExpense(newExpense)
+        }
     }
 
     /**
-     * Update an existing recurring expense.
-     * TODO: Wire up to repository in Sub-phase 3C
+     * Update an existing recurring expense in the database.
      */
     fun updateRecurringExpense(
         id: Long,
@@ -169,51 +94,45 @@ class RecurringExpenseViewModel @Inject constructor(
         startDate: LocalDate,
         description: String?
     ) {
-        val currentList = _recurringExpenses.value
-        _recurringExpenses.value = currentList.map { expense ->
-            if (expense.id == id) {
-                expense.copy(
+        viewModelScope.launch {
+            // Get the existing expense to preserve fields we're not updating
+            val existing = recurringExpenses.value.firstOrNull { it.id == id }
+            if (existing != null) {
+                val updated = existing.copy(
                     amount = amount,
                     category = category,
                     description = description,
                     frequency = frequency,
                     startDate = startDate
+                    // Keep nextDueDate and isActive as they were
                 )
-            } else {
-                expense
+                budgetRepository.updateRecurringExpense(updated)
             }
-        }.sortedWith(
-            compareBy<RecurringExpense> {
-                when (it.frequency) {
-                    RecurrenceFrequency.MONTHLY -> 0
-                    RecurrenceFrequency.WEEKLY -> 1
-                    RecurrenceFrequency.BI_WEEKLY -> 2
-                    RecurrenceFrequency.ANNUALLY -> 3
-                }
-            }.thenBy { it.nextDueDate }
-        )
+        }
     }
 
     /**
-     * Delete a recurring expense.
-     * TODO: Wire up to repository in Sub-phase 3C
+     * Delete a recurring expense from the database.
      */
     fun deleteRecurringExpense(id: Long) {
-        val currentList = _recurringExpenses.value
-        _recurringExpenses.value = currentList.filter { it.id != id }
+        viewModelScope.launch {
+            val expense = recurringExpenses.value.firstOrNull { it.id == id }
+            if (expense != null) {
+                budgetRepository.deleteRecurringExpense(expense)
+            }
+        }
     }
 
     /**
      * Toggle the active state of a recurring expense.
-     * TODO: Wire up to repository in Sub-phase 3C
+     * This allows users to pause/resume recurring expenses without deleting them.
      */
     fun toggleActive(expenseId: Long) {
-        val currentList = _recurringExpenses.value
-        _recurringExpenses.value = currentList.map { expense ->
-            if (expense.id == expenseId) {
-                expense.copy(isActive = !expense.isActive)
-            } else {
-                expense
+        viewModelScope.launch {
+            val expense = recurringExpenses.value.firstOrNull { it.id == expenseId }
+            if (expense != null) {
+                val updated = expense.copy(isActive = !expense.isActive)
+                budgetRepository.updateRecurringExpense(updated)
             }
         }
     }

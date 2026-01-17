@@ -11,6 +11,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -170,7 +171,8 @@ private fun RecurringExpenseCard(
                     Spacer(modifier = Modifier.width(8.dp))
                     Switch(
                         checked = expense.isActive,
-                        onCheckedChange = { onToggleActive() }
+                        onCheckedChange = { onToggleActive() },
+                        modifier = Modifier.testTag("expense_active_switch")
                     )
                 }
             }

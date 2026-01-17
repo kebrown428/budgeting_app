@@ -250,17 +250,20 @@ app/
 - [x] Reusable components (CategoryPicker, FrequencyPicker, etc.)
 - [x] Navigation integration
 
-**Sub-phase 3C: Wire Up Real Data** (Next)
+**Sub-phase 3C: Wire Up Real Data** ✅
 
-- [ ] Connect ViewModel to repository
-- [ ] Implement all CRUD operations
-- [ ] Validation logic
-- [ ] Error handling
+- [x] Connect ViewModel to repository
+- [x] Implement all CRUD operations with Room database
+- [x] Data persists across app restarts
+- [x] Reactive Flow updates for real-time UI sync
 
-**Sub-phase 3D: Testing**
+**Sub-phase 3D: Testing** ✅
 
-- [ ] ViewModel unit tests
-- [ ] UI tests for both screens
+- [x] FakeBudgetRepository for testing
+- [x] ViewModel unit tests (15 test cases covering all operations)
+- [x] BudgetRepositoryImpl tests (12 test cases with in-memory Room database)
+- [x] RecurringExpenseListScreen UI tests (10 Hilt-based integration tests)
+- [x] HiltTestRunner and proper Hilt test infrastructure
 
 ### Phase 4: Core Feature - One-Time Expenses
 
@@ -396,8 +399,8 @@ This is a personal project for learning and interview preparation.
 
 ---
 
-**Current Status**: Phase 3B Complete - Full CRUD functionality for recurring expenses with
-beautiful form UI and reusable components.
+**Current Status**: Phase 3 Complete ✅ - Recurring expenses feature fully functional with UI,
+database persistence, and comprehensive test coverage (37 test cases including Hilt integration
+tests)!
 
-**Next Steps**: Continue Phase 3C - Connect ViewModel to repository for real data persistence, or
-move to Phase 3D for comprehensive testing.
+**Next Steps**: Phase 4 (one-time expenses feature) or Phase 5 (budget setup & calculation).

@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.example.budgetingapp.HiltTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -103,6 +103,8 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     androidTestImplementation("androidx.navigation:navigation-testing:2.7.5")
     androidTestImplementation("com.google.dagger:hilt-android-testing:2.48")
+    androidTestImplementation("app.cash.turbine:turbine:1.0.0")
+    androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
     kspAndroidTest("com.google.dagger:hilt-compiler:2.48")
 
     // Debug
