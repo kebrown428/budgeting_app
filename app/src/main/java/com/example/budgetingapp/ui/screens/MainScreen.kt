@@ -26,6 +26,7 @@ fun MainScreen(
     onNavigateToEditExpense: (Long) -> Unit,
     onNavigateToAddRecurring: () -> Unit,
     onNavigateToEditRecurring: (Long) -> Unit,
+    onNavigateToBudgetSetup: () -> Unit,
 ) {
     var selectedTab by remember { mutableStateOf(MainTab.EXPENSES) }
 
@@ -55,6 +56,7 @@ fun MainScreen(
                     ExpenseListScreen(
                         onAddClick = onNavigateToAddExpense,
                         onEditClick = onNavigateToEditExpense,
+                        onSettingsClick = onNavigateToBudgetSetup,
                     )
                 }
 

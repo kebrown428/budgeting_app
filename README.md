@@ -278,12 +278,35 @@ app/
 - [x] ExpenseListScreen UI tests (16 test cases with Hilt)
 - [x] MainScreen bottom navigation UI tests (12 test cases with Hilt)
 
-### Phase 5: Budget Setup & Calculation Engine
+### Phase 5: Budget Setup & Calculation Engine (In Progress)
 
-- [ ] UI to set monthly budget
-- [ ] Calculate weekly budget logic
-- [ ] Display remaining budget calculation
-- [ ] Business logic + comprehensive unit tests
+**Sub-phase 5A: Budget Setup Screen** ✅
+
+- [x] BudgetViewModel with budget operations
+- [x] BudgetSetupScreen UI with validation and preview
+- [x] Settings icon in top bar with navigation
+- [x] Navigation wiring complete
+
+**Sub-phase 5B: Recurring Expense Auto-Generation** (Next)
+
+- [ ] GenerateRecurringExpensesUseCase
+- [ ] Auto-generate expenses when recurring expenses come due
+- [ ] Visual indicator for auto-generated expenses
+- [ ] Run on app startup
+
+**Sub-phase 5C: Weekly Budget Calculation & Display**
+
+- [ ] Wire up remaining budget calculation
+- [ ] Update ExpenseListScreen with real budget data
+- [ ] Color coding for over/under budget
+- [ ] "Setup Budget" button when no budget exists
+
+**Sub-phase 5D: Testing**
+
+- [ ] GenerateRecurringExpensesUseCase unit tests
+- [ ] BudgetViewModel unit tests
+- [ ] BudgetSetupScreen UI tests
+- [ ] Integration tests
 
 ### Phase 6: Slush Fund Management
 
@@ -404,8 +427,7 @@ This is a personal project for learning and interview preparation.
 
 ---
 
-**Current Status**: Phase 4 Complete ✅ - One-time expenses feature fully functional with weekly
-tracking, bottom navigation, and comprehensive testing (86 total test cases across all features)!
+**Current Status**: Phase 5A Complete ✅ - Budget setup screen implemented with preview calculations
+and settings navigation!
 
-**Next Steps**: Phase 5 (budget setup & calculation engine with auto-generation of recurring
-expenses).
+**Next Steps**: Phase 5B - Auto-generate recurring expenses when they come due.

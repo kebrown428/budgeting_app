@@ -1,4 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Budgeting App</string>
+    <string name="filter_by_category">Filter by Category</string>
+    <string name="close">Close</string>
+    <string name="add_expense_message">Tap the + button to add your first expense</string>
+    <string name="filter_message">Clear the filter or add an expense in this category</string>
+    <string name="no_expenses_past_week">No expenses for this week</string>
+    <string name="no_expenses_ifor_category">No expenses in this category</string>
+    <string name="no_expenses_yet">No expenses yet this week</string>
+    <string name="next_week">Next Week</string>
+    <string name="previous_weeks_offset">%1$d weeks ago</string>
+    <string name="future_weeks_offset">%1$d weeks from now</string>
+    <string name="last_week">Last Week</string>
+    <string name="this_week">This Week</string>
+    <string name="previous_week">Previous week</string>
+    <string name="return_to_current_week">Return to current week</string>
+    <string name="date_range">%1$s - %2$s</string>
+    <string name="add_expense">Add expense</string>
+    <string name="budget_setup">Budget setup</string>
 </resources>

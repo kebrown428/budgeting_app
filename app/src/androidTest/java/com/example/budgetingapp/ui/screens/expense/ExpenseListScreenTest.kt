@@ -90,7 +90,7 @@ class ExpenseListScreenTest {
         composeTestRule.waitForIdle()
 
         composeTestRule
-            .onNodeWithText("No expenses this week yet")
+            .onNodeWithText("No expenses yet this week")
             .assertIsDisplayed()
 
         composeTestRule

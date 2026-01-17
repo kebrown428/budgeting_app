@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.budgetingapp.ui.screens.MainScreen
+import com.example.budgetingapp.ui.screens.budget.BudgetSetupScreen
 import com.example.budgetingapp.ui.screens.expense.AddEditExpenseScreen
 import com.example.budgetingapp.ui.screens.recurring.AddEditRecurringExpenseScreen
 import com.example.budgetingapp.ui.viewmodel.ExpenseViewModel
@@ -44,6 +45,9 @@ fun BudgetingNavHost(
                 },
                 onNavigateToEditRecurring = { expenseId ->
                     navController.navigate(Screen.EditRecurringExpense.createRoute(expenseId))
+                },
+                onNavigateToBudgetSetup = {
+                    navController.navigate(Screen.BudgetSetup.route)
                 },
             )
         }
@@ -105,6 +109,13 @@ fun BudgetingNavHost(
                 expenseId = expenseId,
                 onNavigateBack = { navController.popBackStack() },
                 viewModel = viewModel,
+            )
+        }
+
+        // Budget Setup Screen
+        composable(Screen.BudgetSetup.route) {
+            BudgetSetupScreen(
+                onNavigateBack = { navController.popBackStack() },
             )
         }
     }

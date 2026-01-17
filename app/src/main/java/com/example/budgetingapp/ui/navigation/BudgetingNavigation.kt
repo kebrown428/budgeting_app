@@ -24,4 +24,7 @@ sealed class Screen(val route: String) {
             return "edit_expense/$expenseId"
         }
     }
+
+    // Budget Setup
+    object BudgetSetup : Screen("budget_setup")
 }

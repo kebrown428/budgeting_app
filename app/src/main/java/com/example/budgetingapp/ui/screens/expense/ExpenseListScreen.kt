@@ -1,30 +1,62 @@
 package com.example.budgetingapp.ui.screens.expense
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.budgetingapp.R
 import com.example.budgetingapp.domain.model.Expense
 import com.example.budgetingapp.domain.model.ExpenseCategory
-import com.example.budgetingapp.ui.theme.AppTheme
 import com.example.budgetingapp.ui.viewmodel.ExpenseViewModel
 import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Locale
 
 /**
  * Screen displaying expenses for the current week.
@@ -41,6 +73,7 @@ import java.util.*
 fun ExpenseListScreen(
     onAddClick: () -> Unit,
     onEditClick: (Long) -> Unit,
+    onSettingsClick: () -> Unit,
     viewModel: ExpenseViewModel = hiltViewModel(),
 ) {
     val expenses by viewModel.weeklyExpenses.collectAsState()
@@ -58,7 +91,13 @@ fun ExpenseListScreen(
                     IconButton(onClick = { showCategoryFilter = true }) {
                         Icon(
                             imageVector = Icons.Default.FilterList,
-                            contentDescription = "Filter by category",
+                            contentDescription = stringResource(R.string.filter_by_category),
+                        )
+                    }
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Default.AccountBalance,
+                            contentDescription = stringResource(R.string.budget_setup),
                         )
                     }
                 },
@@ -76,7 +115,7 @@ fun ExpenseListScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Add expense",
+                    contentDescription = stringResource(R.string.add_expense),
                 )
             }
         },
@@ -153,38 +192,87 @@ private fun WeekNavigationBar(
     onNextWeek: () -> Unit,
     onCurrentWeek: () -> Unit,
 ) {
+    // Calculate the Monday and Sunday of the displayed week
+    val today = java.time.LocalDate.now()
+    val monday = today
+        .with(java.time.temporal.TemporalAdjusters.previousOrSame(java.time.DayOfWeek.MONDAY))
+        .plusWeeks(weekOffset.toLong())
+    val sunday = monday.plusDays(6)
+
+    val dateFormatter = DateTimeFormatter.ofPattern("MMM d")
+    val dateRangeText = stringResource(
+        R.string.date_range,
+        monday.format(dateFormatter),
+        sunday.format(dateFormatter)
+    )
+
     Surface(
         color = MaterialTheme.colorScheme.secondaryContainer,
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Row(
-            modifier = Modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+        Column(
+            modifier = Modifier.padding(8.dp),
         ) {
-            IconButton(onClick = onPreviousWeek) {
-                Icon(Icons.Default.ArrowBack, "Previous week")
-            }
-
-            TextButton(
-                onClick = onCurrentWeek,
-                enabled = weekOffset != 0,
+            // "Return to current week" button when viewing a different week
+            // Using Box with fixed height to prevent layout shift
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(36.dp),
+                contentAlignment = Alignment.Center,
             ) {
-                Text(
-                    text = when (weekOffset) {
-                        0 -> "This Week"
-                        -1 -> "Last Week"
-                        1 -> "Next Week"
-                        else -> if (weekOffset < 0) "$weekOffset weeks ago" else "$weekOffset weeks from now"
-                    },
-                    fontWeight = if (weekOffset == 0) FontWeight.Bold else FontWeight.Normal,
-                )
+                if (weekOffset != 0) {
+                    OutlinedButton(
+                        onClick = onCurrentWeek,
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
+                    ) {
+                        Text(
+                            text = stringResource(R.string.return_to_current_week),
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
             }
 
-            IconButton(onClick = onNextWeek) {
-                Icon(Icons.Default.ArrowForward, "Next week")
+            // Week label and navigation
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                IconButton(onClick = onPreviousWeek) {
+                    Icon(Icons.Default.ArrowBack, stringResource(R.string.previous_week))
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = when (weekOffset) {
+                            0 -> stringResource(R.string.this_week)
+                            -1 -> stringResource(R.string.last_week)
+                            1 -> stringResource(R.string.next_week)
+                            else -> if (weekOffset < 0) stringResource(
+                                R.string.previous_weeks_offset,
+                                weekOffset * -1
+                            ) else stringResource(R.string.future_weeks_offset, weekOffset)
+                        },
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = dateRangeText,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.7f),
+                    )
+                }
+
+                IconButton(onClick = onNextWeek) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = stringResource(R.string.next_week)
+                    )
+                }
             }
         }
     }
@@ -360,11 +448,13 @@ private fun EmptyState(
         ) {
             Text(
                 text = if (hasFilter) {
-                    "No expenses in this category"
-                } else if (weekOffset == 0) {
-                    "No expenses this week yet"
+                    stringResource(R.string.no_expenses_ifor_category)
+                } else if (weekOffset >= 0) {
+                    // Current week or future weeks
+                    stringResource(R.string.no_expenses_yet)
                 } else {
-                    "No expenses for this week"
+                    // Past weeks
+                    stringResource(R.string.no_expenses_past_week)
                 },
                 style = MaterialTheme.typography.titleLarge,
                 textAlign = TextAlign.Center,
@@ -373,11 +463,9 @@ private fun EmptyState(
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = if (hasFilter) {
-                    "Clear the filter or add an expense in this category"
-                } else if (weekOffset == 0) {
-                    "Tap the + button to add your first expense"
+                    stringResource(R.string.filter_message)
                 } else {
-                    ""
+                    stringResource(R.string.add_expense_message)
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 textAlign = TextAlign.Center,
@@ -395,7 +483,7 @@ private fun CategoryFilterDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("Filter by Category") },
+        title = { Text(stringResource(R.string.filter_by_category)) },
         text = {
             LazyColumn {
                 // "All Categories" option
@@ -429,7 +517,7 @@ private fun CategoryFilterDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text("Close")
+                Text(stringResource(R.string.close))
             }
         },
     )
