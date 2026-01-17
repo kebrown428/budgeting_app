@@ -5,13 +5,13 @@
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="RecurringExpenseListScreenTest">
+      <SelectionState runConfigName="ExpenseListScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="expenseCard_displaysNextDueDate()">
+      <SelectionState runConfigName="MainScreenTest">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ExpenseDaoTest">
+      <SelectionState runConfigName="expenseCard_displaysDateAndTime()">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

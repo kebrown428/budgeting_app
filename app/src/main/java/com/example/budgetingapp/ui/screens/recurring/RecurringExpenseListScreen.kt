@@ -49,7 +49,8 @@ fun RecurringExpenseListScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                ),
+                modifier = Modifier.testTag("recurring_top_bar")
             )
         },
         floatingActionButton = {

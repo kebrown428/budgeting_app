@@ -265,13 +265,18 @@ app/
 - [x] RecurringExpenseListScreen UI tests (10 Hilt-based integration tests)
 - [x] HiltTestRunner and proper Hilt test infrastructure
 
-### Phase 4: Core Feature - One-Time Expenses
+### Phase 4: Core Feature - One-Time Expenses ✅
 
-- [ ] UI to add/edit/delete individual expenses
-- [ ] Category selection
-- [ ] "From slush fund" option
-- [ ] ViewModel + business logic
-- [ ] Unit and UI tests
+- [x] ExpenseViewModel with weekly tracking and category filtering
+- [x] ExpenseListScreen with weekly navigation and filtering
+- [x] AddEditExpenseScreen with "From Slush Fund" checkbox
+- [x] Bottom navigation bar (Expenses ↔ Recurring tabs)
+- [x] Remaining budget placeholder card (ready for Phase 5 integration)
+- [x] Full navigation wiring
+- [x] FakeExpenseRepository for testing
+- [x] ExpenseViewModel unit tests (21 test cases covering all operations)
+- [x] ExpenseListScreen UI tests (16 test cases with Hilt)
+- [x] MainScreen bottom navigation UI tests (12 test cases with Hilt)
 
 ### Phase 5: Budget Setup & Calculation Engine
 
@@ -399,8 +404,8 @@ This is a personal project for learning and interview preparation.
 
 ---
 
-**Current Status**: Phase 3 Complete ✅ - Recurring expenses feature fully functional with UI,
-database persistence, and comprehensive test coverage (37 test cases including Hilt integration
-tests)!
+**Current Status**: Phase 4 Complete ✅ - One-time expenses feature fully functional with weekly
+tracking, bottom navigation, and comprehensive testing (86 total test cases across all features)!
 
-**Next Steps**: Phase 4 (one-time expenses feature) or Phase 5 (budget setup & calculation).
+**Next Steps**: Phase 5 (budget setup & calculation engine with auto-generation of recurring
+expenses).

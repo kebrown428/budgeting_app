@@ -8,69 +8,103 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.budgetingapp.ui.screens.MainScreen
+import com.example.budgetingapp.ui.screens.expense.AddEditExpenseScreen
 import com.example.budgetingapp.ui.screens.recurring.AddEditRecurringExpenseScreen
-import com.example.budgetingapp.ui.screens.recurring.RecurringExpenseListScreen
+import com.example.budgetingapp.ui.viewmodel.ExpenseViewModel
 import com.example.budgetingapp.ui.viewmodel.RecurringExpenseViewModel
 
 /**
  * Main navigation host for the Budgeting App.
  *
  * Sets up all navigation routes and connects screens together.
+ * Main screen contains bottom navigation with Expenses and Recurring tabs.
  */
 @Composable
 fun BudgetingNavHost(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     NavHost(
         navController = navController,
-        startDestination = Screen.RecurringExpenseList.route,
-        modifier = modifier
+        startDestination = Screen.Main.route,
+        modifier = modifier,
     ) {
-        // Recurring Expenses List Screen
-        composable(Screen.RecurringExpenseList.route) { backStackEntry ->
-            // Share the ViewModel across the entire NavHost by scoping it to the graph
-            val viewModel: RecurringExpenseViewModel = hiltViewModel(
-                viewModelStoreOwner = navController.getBackStackEntry(Screen.RecurringExpenseList.route)
-            )
-            RecurringExpenseListScreen(
-                onAddClick = {
+        // Main Screen with bottom navigation (Expenses and Recurring tabs)
+        composable(Screen.Main.route) {
+            MainScreen(
+                onNavigateToAddExpense = {
+                    navController.navigate(Screen.AddExpense.route)
+                },
+                onNavigateToEditExpense = { expenseId ->
+                    navController.navigate(Screen.EditExpense.createRoute(expenseId))
+                },
+                onNavigateToAddRecurring = {
                     navController.navigate(Screen.AddRecurringExpense.route)
                 },
-                onEditClick = { expenseId ->
+                onNavigateToEditRecurring = { expenseId ->
                     navController.navigate(Screen.EditRecurringExpense.createRoute(expenseId))
                 },
-                viewModel = viewModel
+            )
+        }
+
+        // Add Expense Screen
+        composable(Screen.AddExpense.route) {
+            // ViewModel scoped to Main screen so data persists
+            val viewModel: ExpenseViewModel = hiltViewModel(
+                viewModelStoreOwner = navController.getBackStackEntry(Screen.Main.route),
+            )
+            AddEditExpenseScreen(
+                expenseId = null, // null means "add mode"
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = viewModel,
+            )
+        }
+
+        // Edit Expense Screen
+        composable(
+            route = Screen.EditExpense.route,
+            arguments = listOf(navArgument("expenseId") { type = NavType.LongType }),
+        ) { backStackEntry ->
+            // ViewModel scoped to Main screen so data persists
+            val viewModel: ExpenseViewModel = hiltViewModel(
+                viewModelStoreOwner = navController.getBackStackEntry(Screen.Main.route),
+            )
+            val expenseId = backStackEntry.arguments?.getLong("expenseId")
+            AddEditExpenseScreen(
+                expenseId = expenseId,
+                onNavigateBack = { navController.popBackStack() },
+                viewModel = viewModel,
             )
         }
 
         // Add Recurring Expense Screen
         composable(Screen.AddRecurringExpense.route) {
-            // Use the same ViewModel instance from the list screen
+            // ViewModel scoped to Main screen so data persists
             val viewModel: RecurringExpenseViewModel = hiltViewModel(
-                viewModelStoreOwner = navController.getBackStackEntry(Screen.RecurringExpenseList.route)
+                viewModelStoreOwner = navController.getBackStackEntry(Screen.Main.route),
             )
             AddEditRecurringExpenseScreen(
                 expenseId = null, // null means "add mode"
                 onNavigateBack = { navController.popBackStack() },
-                viewModel = viewModel
+                viewModel = viewModel,
             )
         }
 
         // Edit Recurring Expense Screen
         composable(
             route = Screen.EditRecurringExpense.route,
-            arguments = listOf(navArgument("expenseId") { type = NavType.LongType })
+            arguments = listOf(navArgument("expenseId") { type = NavType.LongType }),
         ) { backStackEntry ->
-            // Use the same ViewModel instance from the list screen
+            // ViewModel scoped to Main screen so data persists
             val viewModel: RecurringExpenseViewModel = hiltViewModel(
-                viewModelStoreOwner = navController.getBackStackEntry(Screen.RecurringExpenseList.route)
+                viewModelStoreOwner = navController.getBackStackEntry(Screen.Main.route),
             )
             val expenseId = backStackEntry.arguments?.getLong("expenseId")
             AddEditRecurringExpenseScreen(
                 expenseId = expenseId,
                 onNavigateBack = { navController.popBackStack() },
-                viewModel = viewModel
+                viewModel = viewModel,
             )
         }
     }

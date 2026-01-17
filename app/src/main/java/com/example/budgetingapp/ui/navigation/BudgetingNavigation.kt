@@ -6,13 +6,22 @@ package com.example.budgetingapp.ui.navigation
  * Using a sealed class ensures type-safety and makes it easy to add arguments later.
  */
 sealed class Screen(val route: String) {
-    object RecurringExpenseList : Screen("recurring_expense_list")
-    object AddRecurringExpense : Screen("add_recurring_expense")
+    // Main screen with bottom navigation
+    object Main : Screen("main")
 
-    // route with argument for editing
+    // Recurring Expenses
+    object AddRecurringExpense : Screen("add_recurring_expense")
     object EditRecurringExpense : Screen("edit_recurring_expense/{expenseId}") {
         fun createRoute(expenseId: Long): String {
             return "edit_recurring_expense/$expenseId"
+        }
+    }
+
+    // One-Time Expenses
+    object AddExpense : Screen("add_expense")
+    object EditExpense : Screen("edit_expense/{expenseId}") {
+        fun createRoute(expenseId: Long): String {
+            return "edit_expense/$expenseId"
         }
     }
 }
